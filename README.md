@@ -1,19 +1,4 @@
-# programinha teste soma 1
-
-0x00000000	0x00002083	LW x1, 0(x0)	LW x1, 0(x0)
-0x00000004	0x001081b3	ADD x3, x1, x1	ADD x3, x1, x1
-0x00000008	0x00302223	SW x3, 4(x0)	SW x3, 4(x0)
-
-00002083
-001081b3
-00302223
-
-código SLLI (funcional)
-00002083 00309113 00202223    
-
-
-
-
+# Relatório de Alterações no Processador de Modelo
 
 ## sinais de controle (Bloco de controle)
 | instrução     | OPCODE         | funct3    | funct7 | J_inst | RegWrite | ALUSrc | MemWrite | ALUOp1 | ALUOp0 | MemToReg | MemRead | Branch |
@@ -30,16 +15,16 @@ código SLLI (funcional)
 | SLLI          | 0010011 (0x13) | 0x1       |   X    |   0    |    1     |   1    |    0     |   1    |   0    |    0     |    0    |   0    |
 | SLTIU         | 0010011 (0x13) | 0x3       |   X    |   0    |    1     |   1    |    0     |   1    |   0    |    0     |    0    |   0    |
 
-# insts pra implementar:
+## Insts Implementadas:
 
  
- #### JALR 
+ ### JALR 
 
     registrador de destino = pc + 4
     pc = rs1 + imm
     "guarda o endereço da próxima intrução e pula para o endereço absoluto da subrotina"
 
-##### Formato de instrução e Exemplo de código:
+#### Formato de instrução e Exemplo de código:
     
     JALR rd, imm(rs1)
     
@@ -83,6 +68,16 @@ código SLLI (funcional)
 ##### Formato de instrução e Exemplo de código:
     
     SLLI rd, rs1, imm
+    
+    # Código SLLI (carrega x1 com mem[0], shifta 9 vezes e coloca o resultado em mem[1])
+    
+    lw x1, 0(x0)
+    Slli x2, x1, 9
+    sw x2, 4(x0)
+    
+    # Hexa
+
+    00002083 00909113 00202223
 
 <img src="SLLI.png" alt="SLLI">
 
@@ -102,15 +97,16 @@ código SLLI (funcional)
     
     # SLTIU (funcional)
     
-    sltiu x1, x0, 4
+    sltiu x1, x0, -1 # equivalente a 4095 neste caso
     sw x1, 0(x0)
     
     # hexa:
-    00403093 00102023
+    fff03093 00102023
 
 <img src="SLTIU.png" alt="SLTIU">
 
 ###### Observações:
     - inserção de um comparador na ULA
     - usa o signed ImmGen, mas descarta os bits maiores que Im[11], substituindo-os com zeros
-    - inserida na ULA lógica de completar bits mais significativos que res[0] com zeros
+    - inserida na ULA lógica de completar bits mais significativos que res[0] com zeros,
+      a fim de gerar, no reg de destino, 0 ou 1.
